@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Job {
+  id                String    @id @default(cuid())
+  externalId        String    @unique
+  company           String
+  title             String
+  normalizedTitle   String
+  description       String
+  location          String?
+  remoteAllowed     Boolean   @default(false)
+  url               String?
+  source            String    // greenhouse, lever, ashby, etc.
+  embedding         Float[]?
+  x                 Float?
+  y                 Float?
+  z                 Float?
+  simHash           String?   // For deduplication
+  postedAt          DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@map("jobs")
+}
+
+model PcaModel {
+  id              String   @id @default(cuid())
+  components      Json     // PCA components matrix
+  meanVector      Float[]  // Mean vector for centering
+  explainedVar    Float[]  // Explained variance ratios
+  totalJobs       Int      // Number of jobs used for PCA
+  createdAt       DateTime @default(now())
+
+  @@map("pca_models")
+}
+
+model IngestionLog {
+  id            String   @id @default(cuid())
+  source        String   // greenhouse, lever, etc.
+  status        String   // success, error, partial
+  jobsFound     Int      @default(0)
+  jobsInserted  Int      @default(0)
+  jobsUpdated   Int      @default(0)
+  errorMessage  String?
+  duration      Int?     // milliseconds
+  createdAt     DateTime @default(now())
+
+  @@map("ingestion_logs")
+}

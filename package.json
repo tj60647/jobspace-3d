@@ -1,0 +1,41 @@
+{
+  "name": "jobspace-3d",
+  "version": "1.0.0",
+  "description": "3D Job Map application - visualize job embeddings in 3D space",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=server & npm run dev --workspace=client",
+    "dev:server": "npm run dev --workspace=server",
+    "dev:client": "npm run dev --workspace=client",
+    "build": "npm run build --workspace=client && npm run copy-client && npm run build --workspace=server",
+    "build:server": "npm run build --workspace=server",
+    "build:client": "npm run build --workspace=client",
+    "copy-client": "rm -rf server/public && cp -r client/dist server/public",
+    "start": "npm run start --workspace=server",
+    "test": "npm run test --workspace=server && npm run test --workspace=client",
+    "lint": "npm run lint --workspace=server && npm run lint --workspace=client",
+    "type-check": "npm run type-check --workspace=server && npm run type-check --workspace=client",
+    "db:migrate": "npm run db:migrate --workspace=server",
+    "db:generate": "npm run db:generate --workspace=server",
+    "ingest": "npm run ingest --workspace=server"
+  },
+  "keywords": [
+    "jobs",
+    "3d",
+    "visualization",
+    "embeddings",
+    "pca",
+    "react",
+    "three.js"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}
