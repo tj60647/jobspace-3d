@@ -1,0 +1,1 @@
+web: npm run -w server prisma:migrate && node server/dist/src/index.js
