@@ -1,4 +1,3 @@
-import { prisma } from '../index';
 import { getEmbeddingProvider } from '../services/embedding';
 import { recomputePCA } from '../services/pca';
 import { getAvailableCollectors } from './collectors';

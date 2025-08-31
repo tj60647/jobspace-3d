@@ -1,65 +1,78 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
 
 const router = Router();
-const prisma = new PrismaClient();
+
+// Mock data for demonstration
+const mockJobs = [
+  {
+    id: '1',
+    company: 'Example Tech',
+    title: 'Frontend Developer',
+    description: 'Build amazing user interfaces with React and TypeScript.',
+    location: 'San Francisco, CA',
+    remoteAllowed: true,
+    url: 'https://example.com/jobs/1',
+    source: 'greenhouse',
+    postedAt: new Date().toISOString(),
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: '2',
+    company: 'Innovation Corp',
+    title: 'Backend Engineer',
+    description: 'Design scalable systems with Node.js and PostgreSQL.',
+    location: 'New York, NY',
+    remoteAllowed: false,
+    url: 'https://example.com/jobs/2',
+    source: 'lever',
+    postedAt: new Date().toISOString(),
+    createdAt: new Date().toISOString()
+  }
+];
 
 router.get('/', async (req, res) => {
   try {
     const { q, company, location, remote, limit = '100', offset = '0' } = req.query;
 
-    const where: any = {};
+    let filteredJobs = [...mockJobs];
 
-    // Basic text filtering (future enhancement: full-text search with GIN)
+    // Basic filtering
     if (q && typeof q === 'string') {
-      where.OR = [
-        { title: { contains: q, mode: 'insensitive' } },
-        { normalizedTitle: { contains: q, mode: 'insensitive' } },
-        { description: { contains: q, mode: 'insensitive' } },
-        { company: { contains: q, mode: 'insensitive' } }
-      ];
+      const query = q.toLowerCase();
+      filteredJobs = filteredJobs.filter(job => 
+        job.title.toLowerCase().includes(query) ||
+        job.description.toLowerCase().includes(query) ||
+        job.company.toLowerCase().includes(query)
+      );
     }
 
     if (company && typeof company === 'string') {
-      where.company = { contains: company, mode: 'insensitive' };
+      filteredJobs = filteredJobs.filter(job => 
+        job.company.toLowerCase().includes(company.toLowerCase())
+      );
     }
 
     if (location && typeof location === 'string') {
-      where.location = { contains: location, mode: 'insensitive' };
+      filteredJobs = filteredJobs.filter(job => 
+        job.location?.toLowerCase().includes(location.toLowerCase())
+      );
     }
 
     if (remote === 'true') {
-      where.remoteAllowed = true;
+      filteredJobs = filteredJobs.filter(job => job.remoteAllowed);
     }
 
-    const jobs = await prisma.job.findMany({
-      where,
-      select: {
-        id: true,
-        company: true,
-        title: true,
-        description: true,
-        location: true,
-        remoteAllowed: true,
-        url: true,
-        source: true,
-        postedAt: true,
-        createdAt: true
-      },
-      orderBy: { createdAt: 'desc' },
-      take: parseInt(limit as string),
-      skip: parseInt(offset as string)
-    });
-
-    const total = await prisma.job.count({ where });
+    const limitNum = parseInt(limit as string);
+    const offsetNum = parseInt(offset as string);
+    const paginatedJobs = filteredJobs.slice(offsetNum, offsetNum + limitNum);
 
     res.json({
-      jobs,
+      jobs: paginatedJobs,
       pagination: {
-        total,
-        limit: parseInt(limit as string),
-        offset: parseInt(offset as string),
-        hasMore: total > parseInt(offset as string) + parseInt(limit as string)
+        total: filteredJobs.length,
+        limit: limitNum,
+        offset: offsetNum,
+        hasMore: filteredJobs.length > offsetNum + limitNum
       }
     });
   } catch (error) {

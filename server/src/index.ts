@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { PrismaClient } from '@prisma/client';
 import rateLimit from 'express-rate-limit';
 
 import healthRoutes from './routes/health';
@@ -12,9 +11,6 @@ import pcaRoutes from './routes/pca';
 
 const app = express();
 const port = process.env.PORT || 3000;
-
-// Initialize Prisma client
-export const prisma = new PrismaClient();
 
 // Middleware
 app.use(cors());
@@ -51,13 +47,11 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 // Graceful shutdown
 process.on('SIGINT', async () => {
   console.log('Shutting down gracefully...');
-  await prisma.$disconnect();
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
   console.log('Shutting down gracefully...');
-  await prisma.$disconnect();
   process.exit(0);
 });
 

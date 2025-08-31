@@ -1,57 +1,72 @@
 import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
 
 const router = Router();
-const prisma = new PrismaClient();
+
+// Mock data for demonstration
+const mockPositions = [
+  {
+    id: '1',
+    company: 'Example Tech',
+    title: 'Frontend Developer',
+    position: [0.1, 0.2, -0.3],
+    source: 'greenhouse'
+  },
+  {
+    id: '2',
+    company: 'Innovation Corp',
+    title: 'Backend Engineer',
+    position: [-0.2, 0.4, 0.1],
+    source: 'lever'
+  },
+  {
+    id: '3',
+    company: 'AI Startup',
+    title: 'Machine Learning Engineer',
+    position: [0.3, -0.1, 0.2],
+    source: 'ashby'
+  },
+  {
+    id: '4',
+    company: 'Design Co',
+    title: 'UX Designer',
+    position: [-0.4, -0.2, -0.1],
+    source: 'recruitee'
+  },
+  {
+    id: '5',
+    company: 'Data Corp',
+    title: 'Data Scientist',
+    position: [0.2, 0.3, 0.4],
+    source: 'smartrecruiters'
+  }
+];
+
+// Add more mock positions for a fuller visualization
+for (let i = 6; i <= 50; i++) {
+  mockPositions.push({
+    id: `${i}`,
+    company: `Company ${i}`,
+    title: `Position ${i}`,
+    position: [
+      (Math.random() - 0.5),
+      (Math.random() - 0.5),
+      (Math.random() - 0.5)
+    ],
+    source: ['greenhouse', 'lever', 'ashby', 'recruitee', 'smartrecruiters'][i % 5]
+  });
+}
 
 router.get('/', async (req, res) => {
   try {
-    const jobs = await prisma.job.findMany({
-      where: {
-        AND: [
-          { x: { not: null } },
-          { y: { not: null } },
-          { z: { not: null } }
-        ]
-      },
-      select: {
-        id: true,
-        company: true,
-        title: true,
-        x: true,
-        y: true,
-        z: true,
-        source: true,
-        createdAt: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
-
-    // Get PCA model info
-    const pcaModel = await prisma.pcaModel.findFirst({
-      orderBy: { createdAt: 'desc' },
-      select: {
-        totalJobs: true,
-        explainedVar: true,
-        createdAt: true
-      }
-    });
-
     res.json({
-      positions: jobs.map((job: any) => ({
-        id: job.id,
-        company: job.company,
-        title: job.title,
-        position: [job.x, job.y, job.z],
-        source: job.source
-      })),
+      positions: mockPositions,
       meta: {
-        totalPositions: jobs.length,
-        pcaModel: pcaModel ? {
-          totalJobs: pcaModel.totalJobs,
-          explainedVariance: pcaModel.explainedVar,
-          updatedAt: pcaModel.createdAt
-        } : null
+        totalPositions: mockPositions.length,
+        pcaModel: {
+          totalJobs: mockPositions.length,
+          explainedVariance: [0.45, 0.23, 0.18],
+          updatedAt: new Date().toISOString()
+        }
       }
     });
   } catch (error) {
