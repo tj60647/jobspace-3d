@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Scene } from './components/Scene';
 import { fetchPositions, embedText } from './api';
 import { extractTextFromPDF } from './pdf';
-import { cosineSimilarity } from './cosine';
+// import { cosineSimilarity } from './cosine'; // TODO: Use for actual similarity matching
 import type { JobPoint } from './types';
 
 function App() {
@@ -12,7 +12,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
-  const [userEmbedding, setUserEmbedding] = useState<number[] | null>(null);
+  // const [userEmbedding, setUserEmbedding] = useState<number[] | null>(null); // TODO: Use for actual similarity matching
 
   // Load jobs on component mount
   useEffect(() => {
@@ -75,8 +75,9 @@ function App() {
 
       // Generate embedding for resume text
       console.log('Generating embedding...');
-      const embedResponse = await embedText(resumeText);
-      setUserEmbedding(embedResponse.embedding);
+      await embedText(resumeText); // TODO: Store embedResponse for actual similarity matching
+      // const embedResponse = await embedText(resumeText);
+      // setUserEmbedding(embedResponse.embedding); // TODO: Store for actual similarity matching
 
       // Find similar jobs using cosine similarity
       const similarities = jobs.map(job => {
@@ -107,7 +108,7 @@ function App() {
 
   const clearHighlights = useCallback(() => {
     setHighlightedJobs(new Set());
-    setUserEmbedding(null);
+    // setUserEmbedding(null); // TODO: Clear when implementing actual similarity matching
     setSelectedJob(null);
   }, []);
 

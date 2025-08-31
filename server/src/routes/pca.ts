@@ -38,7 +38,7 @@ router.post('/recompute', requireAdminToken, async (req, res) => {
     console.log(`Found ${jobs.length} jobs with embeddings`);
 
     // Prepare embedding matrix
-    const embeddings = jobs.map(job => job.embedding);
+    const embeddings = jobs.map((job: any) => job.embedding);
     
     // Compute PCA
     const { components, mean } = computePca3(embeddings);
@@ -53,7 +53,7 @@ router.post('/recompute', requireAdminToken, async (req, res) => {
     });
 
     // Project all embeddings to 3D coordinates
-    const updates = jobs.map(job => {
+    const updates = jobs.map((job: any) => {
       const [x, y, z] = project3(job.embedding, components, mean);
       return {
         id: job.id,
@@ -65,7 +65,7 @@ router.post('/recompute', requireAdminToken, async (req, res) => {
 
     // Update jobs with new coordinates
     await Promise.all(
-      updates.map(update =>
+      updates.map((update: any) =>
         prisma.job.update({
           where: { id: update.id },
           data: { x: update.x, y: update.y, z: update.z },

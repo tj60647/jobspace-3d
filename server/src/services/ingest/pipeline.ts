@@ -208,7 +208,7 @@ async function recomputePcaCoordinates(): Promise<void> {
     console.log(`Computing PCA for ${jobs.length} jobs`);
     
     // Compute PCA
-    const embeddings = jobs.map(job => job.embedding);
+    const embeddings = jobs.map((job: any) => job.embedding);
     const { components, mean } = computePca3(embeddings);
     
     // Store PCA model
@@ -221,7 +221,7 @@ async function recomputePcaCoordinates(): Promise<void> {
     });
     
     // Update job coordinates
-    const updates = jobs.map(job => {
+    const updates = jobs.map((job: any) => {
       const [x, y, z] = project3(job.embedding, components, mean);
       return {
         id: job.id,
@@ -232,7 +232,7 @@ async function recomputePcaCoordinates(): Promise<void> {
     });
     
     await Promise.all(
-      updates.map(update =>
+      updates.map((update: any) =>
         prisma.job.update({
           where: { id: update.id },
           data: { x: update.x, y: update.y, z: update.z },

@@ -6,8 +6,8 @@ export const router = express.Router();
 
 const jobsQuerySchema = z.object({
   q: z.string().optional(),
-  limit: z.string().transform(Number).default(20),
-  offset: z.string().transform(Number).default(0),
+  limit: z.string().transform(Number).default('20'),
+  offset: z.string().transform(Number).default('0'),
 });
 
 router.get('/', async (req, res) => {

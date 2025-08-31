@@ -12,7 +12,7 @@ const configSchema = z.object({
   RECRUITEE_CLIENTS: z.string().optional(),
   SMARTRECRUITERS_COMPANY: z.string().optional(),
   SMARTRECRUITERS_TOKEN: z.string().optional(),
-  PORT: z.string().transform(Number).default(3000),
+  PORT: z.string().transform(Number).default('3000'),
 });
 
 export const config = configSchema.parse(process.env);
